@@ -1,25 +1,31 @@
 {
   "manifest_version": 3,
-  "name": "Link Scraper Extension",
+  "name": "MalLinkDetection",
   "version": "1.0",
-  "description": "Scrape all links from the current webpage and test if they are malicious.",
+  "description": "Scrape and test links for maliciousness.",
   "permissions": [
-    "activeTab",
-    "storage",
-    "scripting",
-    "http://localhost/*"
+      "activeTab",
+      "storage",
+      "scripting",
+      "http://localhost/*"
   ],
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
   "host_permissions": ["<all_urls>"],
   "action": {
-    "default_popup": "popup.html"
+      "default_popup": "popup.html"
   },
   "background": {
-    "service_worker": "background.js"
+      "service_worker": "background.js"
   },
   "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
+      {
+          "matches": ["<all_urls>"],
+          "js": ["content.js"],
+          "css": ["styles.css"]
+      }
   ]
 }

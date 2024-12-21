@@ -2,13 +2,18 @@
 <html>
 <head>
   <title>Link Scraper</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Scraped Links</h1>
-  <button id="scrape">Scrape Links</button>
-  <ul id="results"></ul>
-  <button id="test">Test Malicious Links</button>
-  <ul id="maliciousResults"></ul>
+  <div style="padding: 20px; text-align: center;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <img src="logo.png" alt="Logo" style="height: 30px; width: 30px;">
+      <h2 style="margin: 0; font-size: 24px;">MalLinkDetection</h2>
+    </div>
+    <button id="scrape" style="margin-top: 30px;">Scrape Links</button>
+    <button id="test-all-links" style="margin-left: 6px; margin-top: 20px; margin-right: 6px;">Test All Links</button>
+    <ul id="results"></ul>
+  </div>
   <script src="popup.js" defer></script>
 </body>
 </html>

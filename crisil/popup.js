@@ -1,29 +1,35 @@
 document.getElementById('scrape').addEventListener('click', async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  // Check if the URL is valid for scripting
   if (tab.url.startsWith('chrome://') || tab.url.startsWith('https://chrome.google.com/webstore')) {
     alert('This page cannot be scripted.');
     return;
   }
 
   try {
-    // Inject the content script to scrape links
+    // Clear links before scraping
+    chrome.storage.local.set({ scrapedLinks: [] }, () => {
+      console.log('Cleared previously scraped links.');
+    });
+
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: ['content.js']
     });
 
-    // Fetch and display scraped links
-    chrome.storage.local.get('scrapedLinks', (data) => {
-      const results = data.scrapedLinks || [];
-      const resultsList = document.getElementById('results');
-      if (results.length === 0) {
-        resultsList.innerHTML = '<li>No links found on this page.</li>';
-      } else {
-        resultsList.innerHTML = results
-          .map(link => `<li><a href="${link}" target="_blank">${link}</a></li>`)
-          .join('');
+    chrome.tabs.sendMessage(tab.id, { action: 'scrape_links' }, (response) => {
+      if (response?.status === 'success') {
+        chrome.storage.local.get('scrapedLinks', (data) => {
+          const results = data.scrapedLinks || [];
+          const resultsList = document.getElementById('results');
+          if (results.length === 0) {
+            resultsList.innerHTML = '<li>No links found on this page.</li>';
+          } else {
+            resultsList.innerHTML = results
+              .map(link => `<li><a href="${link}" target="_blank">${link}</a></li>`)
+              .join('');
+          }
+        });
       }
     });
   } catch (error) {
@@ -32,27 +38,42 @@ document.getElementById('scrape').addEventListener('click', async () => {
   }
 });
 
-document.getElementById('test').addEventListener('click', () => {
-  console.log('Test malicious links button clicked');
-
-  // Fetch scraped links from storage
-  chrome.storage.local.get('scrapedLinks', (data) => {
+document.getElementById('test-all-links').addEventListener('click', async () => {
+  chrome.storage.local.get('scrapedLinks', async (data) => {
     const links = data.scrapedLinks || [];
-    console.log('Scraped links:', links);
+    const resultsList = document.getElementById('results');
 
-    // Send the links to the background script for testing
-    chrome.runtime.sendMessage({ action: 'testMaliciousLinks', links: links }, (response) => {
-      console.log('Received response from background:', response);
-      const maliciousLinks = response.maliciousLinks || [];
-      const maliciousResultsList = document.getElementById('maliciousResults');
+    if (links.length === 0) {
+      alert('No links to test.');
+      return;
+    }
 
-      if (maliciousLinks.length === 0) {
-        maliciousResultsList.innerHTML = '<li>No malicious links found.</li>';
-      } else {
-        maliciousResultsList.innerHTML = maliciousLinks
-          .map(link => `<li><a href="${link}" target="_blank">${link}</a></li>`)
-          .join('');
+    resultsList.innerHTML = ''; // Clear the results list
+
+    for (const link of links) {
+      const listItem = document.createElement('li');
+      listItem.textContent = `Testing ${link}...`;
+      resultsList.appendChild(listItem);
+
+      try {
+        const response = await fetch('http://localhost:5000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: link }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        listItem.textContent = `${link} - ${data.prediction} (${data.confidence.toFixed(2)})`;
+        listItem.style.color = data.prediction === 'Safe' ? 'green' : 'red';
+      } catch (error) {
+        listItem.textContent = `${link} - Error during test.`;
+        listItem.style.color = 'orange';
+        console.error('Error testing link:', error);
       }
-    });
+    }
   });
 });

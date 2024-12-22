@@ -34,17 +34,13 @@ This project was developed as part of the **CRISIL Hackathon** by team members *
    - Analyzes the URL of the current webpage and classifies it as **Safe** or **Malicious**.
 2. **Popup Warnings**
    - Displays warnings for suspicious or malicious links when users click on them.
-3. **Detailed Report**
-   - Provides users with details about why a URL is classified as malicious.
-4. **Blacklist Integration**
-   - Checks URLs against a database of known malicious sites.
-5. **User-Friendly Dashboard**
+3. **User-Friendly Dashboard**
    - Tracks history of scanned URLs and their classifications.
-6. **Custom Scan Feature**
+4. **Custom Scan Feature**
    - Allows users to manually input and scan any URL.
-7. **Secure Communication**
+5. **Secure Communication**
    - Ensures encrypted communication with the classification server to protect user data.
-8. **Lightweight and Fast**
+6. **Lightweight and Fast**
    - Optimized for minimal performance overhead.
 
 ### Workflow

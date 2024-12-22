@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "MalLinkDetection",
+  "name": "ThreatX",
   "version": "1.0",
-  "description": "Scrape and test links for maliciousness.",
+  "description": "Detecting Malicious URLs.",
   "permissions": [
       "activeTab",
       "storage",

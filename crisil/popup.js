@@ -77,3 +77,32 @@ document.getElementById('test-all-links').addEventListener('click', async () => 
     }
   });
 });
+
+document.getElementById('test-curr-link').addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  
+  if (!tab.url) {
+    alert('No URL available to test.');
+    return;
+  }
+
+  const url = tab.url;
+  const resultsList = document.getElementById('results');
+  const listItem = document.createElement('li');
+  listItem.textContent = `Testing current URL: ${url}...`;
+  resultsList.appendChild(listItem);
+
+  try {
+    const response = await fetch('http://localhost:5000/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: url }),
+    });
+    const data = await response.json();
+    listItem.textContent = `${url} - ${data.prediction} (${data.confidence.toFixed(2)})`;
+    listItem.style.color = data.prediction === 'Safe' ? 'green' : 'red';
+  } catch {
+    listItem.textContent = `${url} - Error during test.`;
+    listItem.style.color = 'orange';
+  }
+});

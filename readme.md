@@ -88,10 +88,5 @@ This project was developed as part of the **CRISIL Hackathon** by team members *
 
 ---
 
-## License
-This project is licensed under the MIT License.
-
----
-
 ## Acknowledgments
 Special thanks to **CRISIL** for organizing the hackathon and providing an excellent platform to develop this project.
